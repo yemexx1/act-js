@@ -276,6 +276,27 @@ describe("parse run opts", () => {
     );
   });
 
+  test("setup pull", async () => {
+    const act = new Act();
+    await act
+      .disablePull()
+      .runJob("job");
+    expect(spawnSpy).toHaveBeenCalledWith(
+      ACT_BINARY,
+      [
+        "-j",
+        "job",
+        "--env",
+        "GITHUB_STEP_SUMMARY=/dev/stdout",
+        "--pull",
+        "false",
+        "-W",
+        process.cwd(),
+      ],
+      { cwd: process.cwd() }
+    );
+  });
+
   test("enable logging", async () => {
     const act = new Act();
     const openSpy = jest.spyOn(fsp, "open").mockResolvedValueOnce({

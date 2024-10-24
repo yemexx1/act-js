@@ -24,6 +24,7 @@ export class Act {
   private event: ActionEvent;
   private input: ActionInput;
   private containerOpts: ContainerOpts;
+  private pull: boolean | null; 
 
   constructor(cwd?: string, workflowFile?: string, defaultImageSize?: string) {
     this.secrets = new ArgumentMap<string>("-s");
@@ -36,6 +37,7 @@ export class Act {
     this.event = new ActionEvent();
     this.input = new ActionInput(this.event);
     this.containerOpts = {};
+    this.pull = null;
     this.setDefaultImage(defaultImageSize);
     this.setGithubStepSummary("/dev/stdout");
   }
@@ -173,6 +175,11 @@ export class Act {
 
   clearAllContainerOpts() {
     this.containerOpts = {};
+    return this;
+  }
+
+  disablePull() {
+    this.pull = false;
     return this;
   }
 
@@ -341,6 +348,10 @@ export class Act {
 
     if (this.containerOpts.containerOptions) {
       actArguments.push("--container-options", this.containerOpts.containerOptions);
+    }
+
+    if (this.pull !== null) {
+      actArguments.push("--pull", this.pull ? "true" : "false");
     }
 
     actArguments.push("-W", workflowFile);
